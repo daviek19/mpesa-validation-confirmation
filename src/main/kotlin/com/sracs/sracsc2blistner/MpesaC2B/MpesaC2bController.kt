@@ -3,6 +3,7 @@ package com.sracs.sracsc2blistner.MpesaC2B;
 import com.google.gson.Gson
 import com.sracs.sracsc2blistner.MpesaC2B.support.MpesaResponse
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,11 +27,13 @@ class MpesaC2bController {
      * on this endpoint which then should respond with a success acknowledging the confirmation.
      */
     @PostMapping("/confirm")
-    fun c2bConfirmation(@RequestBody postData: Any): ResponseEntity<MpesaResponse> {
+    fun c2bConfirmation(@RequestBody postData: Any): ResponseEntity<*> {
 
         LOGGER.info("confirmation request for {}", Gson().toJson(postData));
 
-        return ResponseEntity.ok(MpesaResponse("0", "Confirmation received successfully."));
+        return ResponseEntity<MpesaResponse>(
+                MpesaResponse("0", "Confirmation received successfully."),
+                HttpStatus.OK)
     }
 
     /**
@@ -41,12 +44,15 @@ class MpesaC2bController {
      * M-Pesa completes or cancels the transaction depending on this validation response.
      */
     @PostMapping("/validate")
-    private fun c2bValidation(postData: Any): ResponseEntity<MpesaResponse> {
+    private fun c2bValidation(@RequestBody postData: Any): ResponseEntity<*> {
 
         LOGGER.info("validation request for {}", Gson().toJson(postData));
 
-        return ResponseEntity.ok(MpesaResponse("0", "Validation passed successfully"));
+        return ResponseEntity<MpesaResponse>(
+                MpesaResponse("0", "Validation passed successfully."),
+                HttpStatus.OK)
     }
+
 }
 
 
