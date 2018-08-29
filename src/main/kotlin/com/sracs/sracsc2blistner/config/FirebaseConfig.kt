@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.ClassPathResource
 import org.springframework.util.ResourceUtils
 import java.io.FileInputStream
 
@@ -19,11 +20,8 @@ class FirebaseConfig {
         var firebaseApp: FirebaseApp? = null
 
         try {
-            val fcmServiceAccountFile = ResourceUtils.getFile("classpath:firebase-admin.json")
-            val serviceAccount = FileInputStream(fcmServiceAccountFile)
-
             val options = FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(GoogleCredentials.fromStream(ClassPathResource("classpath:firebase-admin.json").getInputStream()))
                     .setDatabaseUrl("https://sracs-3e457.firebaseio.com")
                     .build()
             firebaseApp = FirebaseApp.initializeApp(options)
