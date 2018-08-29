@@ -21,7 +21,7 @@ class FirebaseConfig {
 
         try {
             val options = FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(ClassPathResource("classpath:firebase-admin.json").getInputStream()))
+                    .setCredentials(GoogleCredentials.fromStream(ClassPathResource("firebase-admin.json").inputStream))
                     .setDatabaseUrl("https://sracs-3e457.firebaseio.com")
                     .build()
             firebaseApp = FirebaseApp.initializeApp(options)
