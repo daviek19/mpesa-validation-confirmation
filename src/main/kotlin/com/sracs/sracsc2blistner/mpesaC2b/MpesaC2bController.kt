@@ -90,11 +90,11 @@ class MpesaC2bController {
             }
 
         } catch (exception: FirebaseMessagingException) {
-            LOGGER.error("an firebase error occurred when sending fcm-token: {}", exception.toString());
+            LOGGER.error("a firebase error occurred when sending fcm-token: {}", exception.toString());
         } catch (exception: RestClientException) {
             LOGGER.error("an error occurred when fetching details from sracs API: {}", exception.toString());
         } catch (exception: Exception) {
-            LOGGER.error("an general error occurred when sending fcm-token: {}", exception.toString());
+            LOGGER.error("a general error occurred when sending fcm-token: {}", exception.toString());
         }
 
         return ResponseEntity<MpesaResponse>(

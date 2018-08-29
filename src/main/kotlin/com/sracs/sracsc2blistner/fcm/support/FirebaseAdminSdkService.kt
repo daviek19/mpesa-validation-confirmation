@@ -44,7 +44,7 @@ class FirebaseAdminSdkService {
                     .setWebpushConfig(WebpushConfig.builder()
                             .setNotification(WebpushNotification(null, null, WEBPUSH_NEWS_ICON_URL))
                             .build())
-                    .putData("data", "just some json object")
+                    .putData("notificationType", FcmNotificationTypes.REGISTRATION.value)
                     .setToken(user.fcmToken)
                     .build()
 
