@@ -3,6 +3,7 @@ package com.sracs.sracsc2blistner.mpesaC2b;
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.gson.Gson
 import com.sracs.sracsc2blistner.fcm.support.FirebaseAdminSdkService
+import com.sracs.sracsc2blistner.fcm.support.MpesaTransactionsDb
 import com.sracs.sracsc2blistner.fcm.support.SearchUserResponse
 import com.sracs.sracsc2blistner.mpesaC2b.support.ConfirmationResponse
 import com.sracs.sracsc2blistner.mpesaC2b.support.MpesaResponse
@@ -22,6 +23,8 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import java.nio.charset.Charset
 import javax.annotation.PostConstruct
+import java.util.LinkedList
+
 
 /**
  * This API enables Paybill and Buy Goods merchants to integrate to M-Pesa and receive real time payments notifications.
@@ -48,7 +51,6 @@ class MpesaC2bController {
     @Value("\${sracs-search-user-url}")
     lateinit var sracsSearchUserEndpoint: String
 
-
     /**
      * run once immediately after the bean’s initialization to set the restTemplate
      * with authorization details
@@ -74,20 +76,25 @@ class MpesaC2bController {
         //The mpesaResponse from mpesa
         val mpesaResponse: ConfirmationResponse = Gson().fromJson(Gson().toJson(postData), ConfirmationResponse::class.java);
 
-        //Todo send the response to sracs DB
-
         //Query for fcm-token from sracs api with the returned msisdn
         val fcmQueryUrl: String = sracsSearchUserEndpoint + mpesaResponse.msisdn;
 
         try {
-            val fcmQueryResponse = restTemplate.getForEntity(fcmQueryUrl, Any::class.java);
-            val searchUserResponse: SearchUserResponse = Gson().fromJson(Gson().toJson(fcmQueryResponse.body), SearchUserResponse::class.java);
+            //Todo send the response to sracs DB
+            if (!MpesaTransactionsDb.getDatabase().contains(mpesaResponse.transID)) {
 
-            LOGGER.info("found search details {}", searchUserResponse.toString())
-            if (searchUserResponse.data.user !== null && mpesaResponse != null) {
-                firebaseAdminSdkService.sendFcmMessage(searchUserResponse.data.user,mpesaResponse)
+                MpesaTransactionsDb.addTransaction(mpesaResponse.transID);
+
+                val fcmQueryResponse = restTemplate.getForEntity(fcmQueryUrl, Any::class.java);
+                val searchUserResponse: SearchUserResponse = Gson().fromJson(Gson().toJson(fcmQueryResponse.body), SearchUserResponse::class.java);
+
+                LOGGER.info("found search details {}", searchUserResponse.toString())
+                if (searchUserResponse.data.user !== null && mpesaResponse != null) {
+                    firebaseAdminSdkService.sendFcmMessage(searchUserResponse.data.user, mpesaResponse)
+                }
+            } else {
+                LOGGER.info("{} is already in the mpesa transactions database", mpesaResponse.transID);
             }
-
         } catch (exception: FirebaseMessagingException) {
             LOGGER.error("a firebase error occurred when sending fcm-token: {}", exception.toString());
         } catch (exception: RestClientException) {
