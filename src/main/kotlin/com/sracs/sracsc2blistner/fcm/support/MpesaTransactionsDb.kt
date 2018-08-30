@@ -20,8 +20,8 @@ class MpesaTransactionsDb {
 
         @JvmStatic
         fun addTransaction(transactionId: String): Unit {
-            LOGGER.info("{} was added to MpesaTransactionsDb", transactionId);
             mpesaTransactionsDb.add(transactionId);
+            LOGGER.info("{} was added to MpesaTransactionsDb {}", transactionId, mpesaTransactionsDb.toString());
         }
 
         @JvmStatic
