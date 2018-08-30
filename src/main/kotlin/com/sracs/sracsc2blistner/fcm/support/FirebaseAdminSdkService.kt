@@ -2,6 +2,7 @@ package com.sracs.sracsc2blistner.fcm.support
 
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.*
+import com.sracs.sracsc2blistner.mpesaC2b.support.ConfirmationResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -15,9 +16,10 @@ class FirebaseAdminSdkService {
     lateinit var firebaseApp: FirebaseApp
 
     @Throws(FirebaseMessagingException::class, FcmTokenException::class)
-    fun sendFcmMessage(user: SracsUser): String {
+    fun sendFcmMessage(user: SracsUser, mpesaResponse: ConfirmationResponse): String {
 
         val response: String;
+        var notificationType: String = "";
 
         if (!user.fcmToken.isEmpty()) {
             LOGGER.info("sending message to {} of conversation id {} ", user.fcmToken, user.conversationId);
@@ -28,6 +30,12 @@ class FirebaseAdminSdkService {
 
             val title = "Payment Confirmation"
             val body = "Dear " + user.fullName + ". We received your payment."
+
+            if (mpesaResponse.billRefNumber.equals(FcmNotificationTypes.REGISTRATION.value)) {
+                notificationType = FcmNotificationTypes.REGISTRATION.value;
+            } else if (mpesaResponse.billRefNumber.equals(FcmNotificationTypes.PAYMENTS.value)) {
+                notificationType = FcmNotificationTypes.PAYMENTS.value;
+            }
 
             val message = Message.builder()
                     .setNotification(Notification(title, body))
@@ -44,7 +52,7 @@ class FirebaseAdminSdkService {
                     .setWebpushConfig(WebpushConfig.builder()
                             .setNotification(WebpushNotification(null, null, WEBPUSH_NEWS_ICON_URL))
                             .build())
-                    .putData("notificationType", FcmNotificationTypes.REGISTRATION.value)
+                    .putData("notificationType", notificationType)
                     .setToken(user.fcmToken)
                     .build()
 

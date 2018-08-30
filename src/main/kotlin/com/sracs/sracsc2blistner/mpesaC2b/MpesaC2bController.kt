@@ -2,7 +2,6 @@ package com.sracs.sracsc2blistner.mpesaC2b;
 
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.gson.Gson
-import com.sracs.sracsc2blistner.config.RestTemplateConfig
 import com.sracs.sracsc2blistner.fcm.support.FirebaseAdminSdkService
 import com.sracs.sracsc2blistner.fcm.support.SearchUserResponse
 import com.sracs.sracsc2blistner.mpesaC2b.support.ConfirmationResponse
@@ -85,8 +84,8 @@ class MpesaC2bController {
             val searchUserResponse: SearchUserResponse = Gson().fromJson(Gson().toJson(fcmQueryResponse.body), SearchUserResponse::class.java);
 
             LOGGER.info("found search details {}", searchUserResponse.toString())
-            if (searchUserResponse.data.user !== null) {
-                firebaseAdminSdkService.sendFcmMessage(searchUserResponse.data.user)
+            if (searchUserResponse.data.user !== null && mpesaResponse != null) {
+                firebaseAdminSdkService.sendFcmMessage(searchUserResponse.data.user,mpesaResponse)
             }
 
         } catch (exception: FirebaseMessagingException) {
