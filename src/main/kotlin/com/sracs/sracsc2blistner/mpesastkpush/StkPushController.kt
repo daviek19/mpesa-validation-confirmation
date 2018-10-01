@@ -1,7 +1,5 @@
-package com.sracs.sracsc2blistner.mpesaStkPush;
+package com.sracs.sracsc2blistner.mpesastkpush;
 
-import com.sracs.sracsc2blistner.mpesaC2b.MpesaC2bController
-import org.omg.CORBA.Object
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
